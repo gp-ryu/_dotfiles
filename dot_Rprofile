@@ -14,8 +14,6 @@ if (interactive()) {
             radian.color_scheme = "colorful")
 
     library(pacman)
-    library(data.table)
-    library(tidyverse)
     # library(Cairo)
 
     # CairoFonts( regular = 'NotoSans:style=Regular', bold =
