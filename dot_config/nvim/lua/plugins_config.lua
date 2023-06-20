@@ -21,4 +21,4 @@ require("which-key").setup({
 require("nvim-autopairs").setup {}
 require("nvim-tree").setup()
 
-vim.cmd("highlight LineNr guibg=#f0f0f1")
+--vim.cmd("highlight LineNr guibg=#f0f0f1")

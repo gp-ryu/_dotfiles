@@ -211,10 +211,10 @@ create_autocmd({
 })
 
 -- Color overrides
-create_autocmd({
-    event = "ColorScheme",
-    pattern = "*",
-    command = function()
-        vim.api.nvim_command("highlight LineNr guibg=#f0f0f1")
-    end
-})
+--create_autocmd({
+    --event = "ColorScheme",
+    --pattern = "*",
+    --command = function()
+        --vim.api.nvim_command("highlight LineNr guibg=#f0f0f1")
+    --end
+--})
