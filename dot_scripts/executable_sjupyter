@@ -1,0 +1,38 @@
+#!/bin/bash
+function print_usage(){
+      /bin/cat << EOF
+Usage   :
+   sjupyter [-n jobName] [-c CPUs] [-m Memory] [-t Time] [-A Account] [-p batch] [-P port]
+Option
+   -n, jobName         job name description
+   -c, CPUs            16
+   -m, Memory          64G
+   -t, Time            1:00:00
+   -A, Account         sjaiswal
+   -p, batch           batch
+   -P, port            10000
+
+EOF
+   }
+
+while getopts "n:c:m:t:A:p:P:h" opt
+do
+     case $opt in
+         n) JOBN=$OPTARG;;
+         c) CPUS=$OPTARG;;
+         m) MEMS=$OPTARG;;
+         t) TIME=$OPTARG;;
+         A) ACCT=$OPTARG;;
+         p) BTCH=$OPTARG;;
+         P) PORT=$OPTARG;;
+         h) print_usage; return 1;;
+     esac
+ done
+
+ if [[ -n $HELP  || $@ == "" ]];
+ then print_usage;
+ else {
+     srun -J $JOBN -c $CPUS --mem $MEMS -t $TIME -A $ACCT -p $BTCH --pty jupyter lab --no-browser --port $PORT --ip 0.0.0.0
+ }
+ fi
+

@@ -1,0 +1,3 @@
+#!/bin/bash
+awk "{list[\$$1]++} END {OFS = "'"\t"'"; for(key in list){total += list[key]; print key, list[key]}; print \"---\",\"---\",\"\n\",\"TOTAL\", total}" $2 | column -t
+

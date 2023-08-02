@@ -1,0 +1,54 @@
+#!/bin/bash
+
+function print_usage(){
+        /bin/cat << EOF
+Usage   :
+    sarray [-n jobName] [-c CPUs] [-m Memory] [-t Time] [-f Array_file] [-x executable]
+Option
+    -n, jobName         job name description
+    -c, CPUs            16
+    -m, Memory          64G
+    -t, Time            1:00:00
+    -f, Array_file      zz_list.txt
+    -x, executable      \$(which samtools)
+    -o, OTHER           other files...
+
+EOF
+    }
+    while getopts "n:c:m:t:f:x:o:h" opt
+    do
+        case $opt in
+            n) JOBN=$OPTARG;;
+            c) CPUS=$OPTARG;;
+            m) MEMS=$OPTARG;;
+            t) TIME=$OPTARG;;
+            f) FILE=$OPTARG;;
+            x) EXEC=$OPTARG;;
+            o) OTHER=$OPTARG;;
+            h) print_usage; return 1;;
+        esac
+    done
+
+    if [[ -n $HELP  || $@ == "" ]];
+    then print_usage;
+    else {
+        mamba activate base
+
+        #code_directory=$(realpath $(dirname ${BASH_SOURCE[0]}))
+        array_length=$(wc -l ${FILE} | cut -d ' ' -f1)
+        line_number=${SLURM_ARRAY_TASK_ID}
+        mkdir SLURM_LOGS
+
+        sbatch --output SLURM_LOGS/%A_%a.log \
+            --error SLURM_LOGS/%A_%a.log \
+            --array "1-${array_length}" \
+            --time $TIME \
+            --account sjaiswal \
+            --cpus-per-task $CPUS \
+            --mem $MEMS \
+            --job-name $JOBN \
+            ${EXEC} $OTHER $FILE
+
+    }
+    fi
+

@@ -1,0 +1,3 @@
+#!/bin/bash
+parallel -k --eta --pipe-part --block 1M -a $1 rg -F -f - $2
+

@@ -1,4 +1,4 @@
-zmodload zsh/zprof # for debugging shell startup speed
+#zmodload zsh/zprof # for debugging shell startup speed
 
 
 # Manually configured section
@@ -39,9 +39,9 @@ eval $(dircolors)
         #eval "$("$BASE16_SHELL/profile_helper.sh")"
 
 # Broot
-if [ -f $HOME/.config/broot/launcher/bash/br ]; then
-    source $HOME/.config/broot/launcher/bash/br
-fi
+#if [ -f $HOME/.config/broot/launcher/bash/br ]; then
+#    source $HOME/.config/broot/launcher/bash/br
+#fi
 
 
 # PM functions
@@ -122,7 +122,7 @@ zinit snippet OMZP::colored-man-pages
 #zinit snippet OMZP::perl
 
 # Directories
-zinit ice pick"init.sh"
+zinit ice pick "init.sh"
 #zinit light "b4b4r07/enhancd"
 #zinit snippet OMZP::dircycle
 #zinit snippet OMZP::dirhistory
@@ -163,7 +163,7 @@ zinit light "tarruda/zsh-autosuggestions"
 #zplug, from:oh-my-zsh "plugins/virtualenvwrapper"
 
 # Miscellaneous
-zinit ice depth"1"
+zinit ice depth "1"
 zinit light "romkatv/powerlevel10k"
 #zinit light "djui/alias-tips"
 #zinit light "hchbaw/zce.zsh"
@@ -234,8 +234,13 @@ ZSH_AUTOSUGGEST_USE_ASYNC=true
 
 # Autoload compinit at the end
 autoload -Uz compinit && compinit
+for dump in ~/.zcompdump(N.mh+24); do
+  compinit
+done
+compinit -C
 autoload -Uz compdef
 autoload -Uz promptinit && promptinit
+
 
 # Zoxide
 #eval "$(zoxide init zsh)"
@@ -257,7 +262,8 @@ else
 fi
 unset __mamba_setup
 # <<< mamba initialize <<<
-
+alias ma='mamba activate '
+alias md='mamba deactivate '
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
 __conda_setup="$('/home/gryu/micromamba/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
@@ -280,7 +286,6 @@ fi
 
 export PATH="$(cope_path):$PATH"
 ### End of Zinit's installer chunk
-#
 
 ## GPRyu 
 export PATH="$HOME/.scripts:$PATH"
@@ -288,169 +293,15 @@ export PATH="$HOME/bin/galyleo:$PATH"
 unalias l
 alias l='less -SNx16 '
 alias L='pspg --tsv --only-for-tables --no-progressive-load'
-export H='/oak/stanford/groups/sjaiswal/gryu'
-export scg='/oak/stanford/scg/lab_sjaiswal/gryu'
-
-alias t='$HOME/.scripts/transpose.awk '
-
-export S='~/.scripts/'
-
-#zinit pack for fzf
-
 alias dc='cd '
 alias bv='bcftools view --threads 32 '
 alias b='bcftools '
+export H='/oak/stanford/groups/sjaiswal/gryu'
+export scg='/oak/stanford/scg/lab_sjaiswal/gryu'
+alias t='$HOME/.scripts/transpose.awk '
 
-function noti(){
-    echo -e "notify $1 to the BOT"
-    bash $HOME/.scripts/zz_telegram.sh $1 1>/dev/null  && echo DONE
-}
-
-function dim(){
-    nrow=$(wc -l $1 | cut -d ' ' -f1) 
-    ncol=$(head -n1 $1 | t | wc -l)
-    echo -e "$nrow\t$ncol"
-}
+fpath=( $HOME/.scripts "${fpath[@]}" )
+autoload -Uz $fpath[1]/*(.:t)
 
 
-function colnames(){
-    if [[ -f $1 ]]; then
-        head -n1 $1 | sed 's;[,\t];\n;g' | nl
-    else
-        head -n1 /dev/stdin | sed 's;[,\t];\n;g' | nl
-    fi
-}
-
-function rg_p(){
-    parallel -k --eta --pipe-part --block 1M -a $1 rg -F -f - $2 
-}
-function wc_p(){
-    parallel -k --block 1M wc ::: $@ | column -t 
-}
-
-function headtail(){
-    if [[  -f $1 ]]; then
-        cat $1 | tee >(head | cat - <(echo -e "\n...\n")) | stdbuf -o1K tail /dev/stdin
-    else
-        cat /dev/stdin | tee >(head | cat - <(echo -e "\n...\n")) | stdbuf -o1K tail /dev/stdin
-    fi
-}
-
-function summary(){
-    awk "{list[\$$1]++} END {OFS = "'"\t"'"; for(key in list){total += list[key]; print key, list[key]}; print \"---\",\"---\",\"\n\",\"TOTAL\", total}" $2 | column -t 
-}
-
-function sarray(){
-    function print_usage(){
-        /bin/cat << EOF
-Usage   :
-    sarray [-n jobName] [-c CPUs] [-m Memory] [-t Time] [-f Array_file] [-x executable]
-Option
-    -n, jobName         job name description
-    -c, CPUs            16
-    -m, Memory          64G
-    -t, Time            1:00:00
-    -f, Array_file      zz_list.txt
-    -x, executable      \$(which samtools)
-    -o, OTHER           other files...
-        
-EOF
-    }
-    while getopts "n:c:m:t:f:x:o:h" opt
-    do 
-        case $opt in
-            n) JOBN=$OPTARG;;
-            c) CPUS=$OPTARG;;
-            m) MEMS=$OPTARG;;
-            t) TIME=$OPTARG;;
-            f) FILE=$OPTARG;;
-            x) EXEC=$OPTARG;;
-            o) OTHER=$OPTARG;;
-            h) print_usage; return 1;;
-        esac
-    done 
-
-    if [[ -n $HELP  || $@ == "" ]];
-    then print_usage;
-    else {
-        mamba activate base 
-
-        #code_directory=$(realpath $(dirname ${BASH_SOURCE[0]}))
-        array_length=$(wc -l ${FILE} | cut -d ' ' -f1)
-        line_number=${SLURM_ARRAY_TASK_ID}
-        mkdir SLURM_LOGS
-
-        sbatch --output SLURM_LOGS/%A_%a.log \
-            --error SLURM_LOGS/%A_%a.log \
-            --array "1-${array_length}" \
-            --time $TIME \
-            --account sjaiswal \
-            --cpus-per-task $CPUS \
-            --mem $MEMS \
-            --job-name $JOBN \
-            ${EXEC} $OTHER $FILE
-
-    }
-    fi
-}
-
-sarray_prefix="
-#!/bin/bash
-. \"${HOME}/micromamba/etc/profile.d/conda.sh\"
-. \"${HOME}/micromamba/etc/profile.d/mamba.sh\"
-mamba activate base 
-
-array_file=\$1
-array_prefix=\$(sed \"\${SLURM_ARRAY_TASK_ID}q; d\" \${array_file})
-"
-
-sbatch_prefix="
-#!/bin/bash
-
-#SBATCH --job-name=test
-#SBATCH --time 1:00:00 
-#SBATCH --cpus-per-task=16
-#SBATch --mem-per-cpu=4G
-#SBATCH --account sjaiswal
-
-"
-
-#alias sjupyter="srun -c16 --mem128G -t 4:00:00 -A sjaiswal -p batch --pty jupyter lab --port 10000 --ip 0.0.0.0"
-
-function sjupyter(){
-    function print_usage(){
-        /bin/cat << EOF
-Usage   :
-    sjupyter [-n jobName] [-c CPUs] [-m Memory] [-t Time] [-A Account] [-p batch] [-P port]
-Option
-    -n, jobName         job name description
-    -c, CPUs            16
-    -m, Memory          64G
-    -t, Time            1:00:00
-    -A, Account         sjaiswal
-    -p, batch           batch
-    -P, port            10000
-        
-EOF
-    }
-    while getopts "n:c:m:t:A:p:P:h" opt
-    do 
-        case $opt in
-            n) JOBN=$OPTARG;;
-            c) CPUS=$OPTARG;;
-            m) MEMS=$OPTARG;;
-            t) TIME=$OPTARG;;
-            A) ACCT=$OPTARG;;
-            p) BTCH=$OPTARG;;
-            P) PORT=$OPTARG;;
-            h) print_usage; return 1;;
-        esac
-    done 
-
-    if [[ -n $HELP  || $@ == "" ]];
-    then print_usage;
-    else {
-        srun -J $JOBN -c $CPUS --mem $MEMS -t $TIME -A $ACCT -p $BTCH --pty jupyter lab --no-browser --port $PORT --ip 0.0.0.0
-    }
-    fi
-}
+#zprof
