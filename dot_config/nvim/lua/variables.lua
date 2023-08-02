@@ -20,7 +20,7 @@ set_var({
 })
 
 -- System copy
-{{ if eq .chezmoi.os "linux" }}
+
 set_var({
     variable = "system_copy#copy_command",
     value = "xclip"
@@ -30,7 +30,7 @@ set_var({
     variable = "paste_copy#copy_command",
     value = "xclip -o"
 })
-{{ end }}
+
 
 -- Nvim-R
 -- Enable folding
@@ -91,12 +91,12 @@ set_var({
     variable = "R_cmd",
     value = "R"
 })
-{{ if eq .chezmoi.os "linux" }}
+
 set_var({
     variable = "R_path",
     value = '$HOME/micromamba/envs/r/bin'
 })
-{{ end }}
+
 
 --set_var(
     --variable = "R_args",
