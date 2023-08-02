@@ -141,9 +141,7 @@ return require('packer').startup(
         use 'lervag/vimtex' -- LaTeX continuous compile
 
         -- Markdown
-        {{ if eq .chezmoi.os "darwin"  }}
-        use {'euclio/vim-markdown-composer', run = 'cargo build --release --locked'}
-        {{ end }}
+        
 
         -- Movement
         use 'mg979/vim-visual-multi' -- sublime text multiple cursor
