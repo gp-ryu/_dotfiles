@@ -243,7 +243,7 @@ autoload -Uz promptinit && promptinit
 
 
 # Zoxide
-#eval "$(zoxide init zsh)"
+eval "$(zoxide init zsh)"
 
 
 # >>> mamba initialize >>>
@@ -299,6 +299,17 @@ alias b='bcftools '
 export H='/oak/stanford/groups/sjaiswal/gryu'
 export scg='/oak/stanford/scg/lab_sjaiswal/gryu'
 alias t='$HOME/.scripts/transpose.awk '
+alias tt="top -u${USER}"
+
+sarray_prefix="
+#!/bin/bash
+. \"${HOME}/micromamba/etc/profile.d/conda.sh\"
+. \"${HOME}/micromamba/etc/profile.d/mamba.sh\"
+mamba activate base 
+
+array_file=\$1
+array_prefix=\$(sed \"\${SLURM_ARRAY_TASK_ID}q; d\" \${array_file})
+"
 
 fpath=( $HOME/.scripts "${fpath[@]}" )
 autoload -Uz $fpath[1]/*(.:t)
