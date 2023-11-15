@@ -1,0 +1,8 @@
+#!/bin/bash
+
+if [[ -f $1 ]] ; then
+    cat $1 | tee >(head | cat - <(echo -e "\n...\n")) | stdbuf -o1K tail /dev/stdin
+else
+    cat /dev/stdin | tee >(head | cat - <(echo -e "\n...\n")) | stdbuf -o1K tail /dev/stdin
+fi
+

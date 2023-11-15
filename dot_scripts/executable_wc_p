@@ -1,0 +1,5 @@
+#!/bin/bash
+
+pararllel -k --block 1M wc ::: $@ | column -t
+
+
