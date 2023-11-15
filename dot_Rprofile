@@ -1,4 +1,4 @@
-options(repos = structure(c(CRAN = "http://cran.rstudio.com/")))
+options(repos = structure(c(CRAN = "https://cran.rstudio.com/")))
 options(languageserver.server_capabilities = list(completionProvider = FALSE, signatureHelpProvider = FALSE,
     completionItemResolve = FALSE))
 if (interactive()) {
@@ -15,6 +15,15 @@ if (interactive()) {
 
     library(pacman)
     # library(Cairo)
+    lib <- c('data.table','tidyverse','magrittr','parallel','psych','gridExtra','ggpubr','rstatix','ggrepel')
+    suppressMessages(lapply(lib, require, character.only = T));
+    image <- function(x, ratio){
+        options(repr.plot.width = x, repr.plot.height = x*ratio)
+
+    }
+    matdim <- function(x, y){
+        options(repr.matrix.max.rows = x, repr.matrix.max.cols = y)
+    }
 
     # CairoFonts( regular = 'NotoSans:style=Regular', bold =
     # 'NotoSans:style=Bold', italic = 'NotoSans:style=Italic', bolditalic =

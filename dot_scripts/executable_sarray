@@ -37,7 +37,7 @@ EOF
         #code_directory=$(realpath $(dirname ${BASH_SOURCE[0]}))
         array_length=$(wc -l ${FILE} | cut -d ' ' -f1)
         line_number=${SLURM_ARRAY_TASK_ID}
-        mkdir SLURM_LOGS
+        mkdir SLURM_LOGS 2>/dev/null
 
         sbatch --output SLURM_LOGS/%A_%a.log \
             --error SLURM_LOGS/%A_%a.log \
@@ -47,7 +47,7 @@ EOF
             --cpus-per-task $CPUS \
             --mem $MEMS \
             --job-name $JOBN \
-            ${EXEC} $OTHER $FILE
+            ${EXEC} $FILE $OTHER
 
     }
     fi
