@@ -139,12 +139,6 @@ zinit ice pick "init.sh"
 # Git
 #zinit snippet OMZP::git
 
-# Go
-#zinit snippet OMZP::golang #lazy
-
-# Haskell
-#zinit snippet OMZP::cabal #lazy
-
 # History
 #zplug "marlonrichert/zsh-autocomplete", use:zsh-autocomplete.zsh
 zinit light "zsh-users/zsh-history-substring-search"
@@ -153,44 +147,11 @@ zinit light "zdharma-continuum/history-search-multi-word"
 zinit light "tarruda/zsh-autosuggestions"
 #zinit light "ellie/atuin"
 
-# Python
-#zinit snippet OMZP::pep8
-#zinit snippet OMZP::python
-#zinit snippet OMZP::pip
-#zinit snippet OMZP::pyenv
-#zinit snippet OMZP::virtualenv #lazy
-#zplug oh-my-zsh "plugins/pylinst"
-#zplug, from:oh-my-zsh "plugins/virtualenvwrapper"
-
 # Miscellaneous
 zinit ice depth "1"
 zinit light "romkatv/powerlevel10k"
-#zinit light "djui/alias-tips"
-#zinit light "hchbaw/zce.zsh"
 zinit light "jimmijj/zsh-syntax-highlighting"
-#zinit light "jreese/zsh-titles"
-#zinit light "mafredri/zsh-async" #lazy
 zinit snippet OMZP::catimg #lazy
-#zinit snippet OMZP::themes #lazy
-#zinit snippet OMZP::kate #lazy
-#zplug "plugins/vi-mode", from:oh-my-zsh 
-#zinit snippet OMZP::zsh_reload
-#zinit light "zdharma-continuum/zsnapshot"
-#zinit light "zdharma-continuum/ztrace"
-#zinit light "Tarrasch/zsh-functional"
-#zinit light "vifon/deer" #lazy
-#zinit light "willghatch/zsh-snippets"
-#zinit light "zsh-users/zaw"
-#zplug "joel-porquet/zsh-dircolors-solarized"
-#zplug "Valiev/almostontop"
-#zplug, from:oh-my-zsh "plugins/safe-paste"
-#zplug oh-my-zsh "plugins/web-search"
-#zplug "joepvd/grep2awk", nice:10
-#zplug load" Angelmmiguel/pm"
-#zplug load" marzocchi/zsh-notify"
-#zinit light "softmoth/zsh-vim-mode"
-#zplug "DarrinTisdale/zsh-aliases-exa"
-#zplug "hchbaw/auto-fu.zsh"
 
 # System
 #zplug "plugins/archlinux", from:oh-my-zsh 
@@ -243,7 +204,8 @@ autoload -Uz promptinit && promptinit
 
 
 # Zoxide
-eval "$(zoxide init zsh)"
+eval "$(zoxide init --cmd cd zsh)"
+#eval "$(pixi completion --shell zsh)"
 
 
 # >>> mamba initialize >>>
@@ -262,8 +224,11 @@ else
 fi
 unset __mamba_setup
 # <<< mamba initialize <<<
-alias ma='mamba activate '
-alias md='mamba deactivate '
+alias ma='micromamba activate '
+alias md='micromamba deactivate '
+alias mi='micromamba install '
+alias mc='micromamba create '
+
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
 __conda_setup="$('/home/gryu/micromamba/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
@@ -288,8 +253,7 @@ export PATH="$(cope_path):$PATH"
 ### End of Zinit's installer chunk
 
 ## GPRyu 
-export PATH="$HOME/.scripts:$PATH"
-export PATH="$HOME/bin/galyleo:$PATH"
+#export PATH="$HOME/bin/galyleo:$PATH"
 unalias l
 alias l='less -SNx16 '
 alias L='pspg --tsv --only-for-tables --no-progressive-load'
@@ -300,10 +264,11 @@ export H='/oak/stanford/groups/sjaiswal/gryu'
 export scg='/oak/stanford/scg/lab_sjaiswal/gryu'
 alias t='$HOME/.scripts/transpose.awk '
 alias tt="top -u${USER}"
+unalias lt
 
 sarray_prefix="
 #!/bin/bash
-. \"${HOME}/micromamba/etc/profile.d/conda.sh\"
+# . \"${HOME}/micromamba/etc/profile.d/conda.sh\"  # commented out by conda initialize
 . \"${HOME}/micromamba/etc/profile.d/mamba.sh\"
 mamba activate base 
 
@@ -316,3 +281,6 @@ autoload -Uz $fpath[1]/*(.:t)
 
 
 #zprof
+export PATH="$HOME/.scripts:$PATH"
+export PATH="$HOME/.cargo/bin:$PATH"
+export PATH="$HOME/.pixi/bin:$PATH"
