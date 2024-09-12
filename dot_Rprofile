@@ -13,22 +13,18 @@ if (interactive()) {
             radian.prompt = " ",
             radian.color_scheme = "colorful")
 
-    library(pacman)
     # library(Cairo)
-    lib <- c('data.table','tidyverse','magrittr','parallel','psych','gridExtra','ggpubr','rstatix','ggrepel')
-    suppressMessages(lapply(lib, require, character.only = T));
+    pacman::p_load('data.table','tidyverse','magrittr','parallel','psych')
     image <- function(x, ratio){
         options(repr.plot.width = x, repr.plot.height = x*ratio)
-
     }
     matdim <- function(x, y){
         options(repr.matrix.max.rows = x, repr.matrix.max.cols = y)
     }
-
+    matdim(20,40)
     # CairoFonts( regular = 'NotoSans:style=Regular', bold =
     # 'NotoSans:style=Bold', italic = 'NotoSans:style=Italic', bolditalic =
     # 'NotoSans:style=Bold Italic,BoldItalic', symbol = 'Symbol' )
-
 
     # syntax highlighting
     library(colorout)

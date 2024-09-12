@@ -1,393 +1,78 @@
 #!/usr/bin/env bash
 
-set -e
-set -o xtrace -o pipefail -o errexit
+set -o xtrace
 
-system_type=$(uname -s)
+if [ ! -f $HOME/.pixi/bin/pixi ]; then
+  curl -fsSL https://pixi.sh/install.sh | bash
+  if [ ! -f $HOME/.bashrc ]; then
+    echo 'PATH="${HOME}/.pixi/bin:${PATH}"' >>.bashrc
+  fi
+fi
+export PATH="${HOME}/.pixi/bin:${PATH}"
+if [ -d ${HOME}/.pixi/envs ]; then
+  ls ${HOME}/.pixi/envs >/tmp/installed_packages
+else
+  touch /tmp/installed_packages
+fi
+
+comm -13 <(sort -u /tmp/installed_packages) <(sort -u $HOME/.local/share/chezmoi/dot_config/chezmoi/package_list) | xargs -P2 -I % pixi global install -c dnachun -c conda-forge -c bioconda %
 
 {{ if eq .chezmoi.os "linux" -}}
-    if [ ! -f $HOME/.local/bin/micromamba ]; then
-        PATH=$HOME/.local/bin:$PATH
-        curl micro.mamba.pm/install.sh | bash
-    fi
-    micromamba shell init --shell=bash $HOME/micromamba
-    export MAMBA_EXE="$HOME/.local/bin/micromamba"
-    export MAMBA_ROOT_PREFIX="$HOME/micromamba"
-    . $HOME/micromamba/etc/profile.d/micromamba.sh
-    micromamba activate
-    micromamba config prepend channels defaults
-    micromamba config prepend channels bioconda
-    micromamba config prepend channels conda-forge
-    micromamba config prepend channels dnachun
-    micromamba config set auto_activate_base true
-    micromamba install --yes \
-        angle-grinder \
-        go-archiver \
-        aria2 \
-        as-tree \
-        atool \
-        atuin \
-        autoconf \
-        autogen \
-        automake \
-        bartib \
-        bash \
-        bash-language-server \
-        bat \
-        bc \
-        bibclean \
-        bibparse \
-        bingrep \
-        binutils \
-        bison \
-        bit \
-        bottom \
-        btop \
-        breezy \
-        broot \
-        bzip2 \
-        cbfmt \
-        ccat \
-        chars \
-        checkmake \
-        chezmoi \
-        clangdev \
-        cmake \
-        code-minimap \
-        commitlint \
-        conda-tree \
-        coreutils \
-        cpio \
-        croc \
-        cspell \
-        csview \
-        csvq \
-        curl \
-        cvs \
-        dasel \
-        datamash \
-        ddh \
-        delve \
-        dfmt \
-        diffr \
-        difftastic \
-        diffutils \
-        diff-so-fancy \
-        diskonaut \
-        diskus \
-        dmd \
-        dockerfile-language-server-nodejs \
-        dprint \
-        dsq \
-        dtools \
-        dua-cli \
-        dub \
-        duckdb \
-        duf \
-        dura \
-        dust \
-        elvish \
-        entr \
-        exa \
-        eva \
-        f2 \
-        fastmod \
-        fblog \
-        fclones \
-        fcp \
-        fd-find \
-        fetch \
-        file \
-        fixjson \
-        flex \
-        flint \
-        fork-cleaner \
-        fq \
-        fselect \
-        fx \
-        fzf \
-        fzy \
-        gawk \
-        gaze \
-        gcc \
-        gccdiag \
-        gcsfuse \
-        gdb \
-        gersemi \
-        gfortran \
-        gh \
-        ghorg \
-        git \
-        git-absorb \
-        git-cliff \
-        git-delta \
-        git-extras \
-        git-imerge \
-        gitlint \
-        gitql \
-        gitui \
-        global \
-        glow-md \
-        gnupg \
-        go \
-        goawk \
-        godu \
-        gofumpt \
-        go-ghq \
-        gojq \
-        golines \
-        gopls \
-        go-shfmt \
-        gotop \
-        gpg-tui \
-        grep \
-        grex \
-        groff \
-        gron \
-        gxx \
-        gum \
-        helix \
-        hstr \
-        htmlq \
-        htop \
-        hwatch \
-        hyperfine \
-        inetutils \
-        jaq \
-        jd \
-        jid \
-        jj \
-        jless \
-        joshuto \
-        jql \
-        jsonlint \
-        jsonpp \
-        kalker \
-        kickstart \
-        kondo \
-        lazygit \
-        ldc \
-        less \
-        lf \
-        lftp \
-        licensor \
-        llama \
-        lld \
-        lldb \
-        llvmdev \
-        lsof \
-        luaformatter \
-        lua-language-server \
-        lychee \
-        lzip \
-        lzo \
-        lzop \
-        m4 \
-        macchina \
-        make \
-        mamba \
-        man-db \
-        markdownlint-cli2 \
-        markdown-toc \
-        massren \
-        mcfly \
-        mdcat \
-        melody \
-        members \
-        mercurial \
-        meson \
-        micro \
-        miller \
-        moar \
-        moreutils \
-        murex \
-        navi \
-        ncdu \
-        ncftp \
-        neofetch \
-        neovim \
-        nomino \
-        npm-groovy-lint \
-        nsh \
-        nushell \
-        nvim \
-        ocdc \
-        octosql \
-        oh-my-posh \
-        oil \
-        orgalorg \
-        ouch \
-        openssh \
-        p7zip \
-        page \
-        patch \
-        patchelf \
-        pax \
-        pbzip2 \
-        pdfcpu \
-        peco \
-        percol \
-        periscope \
-        perl-ack \
-        perl-app-cope \
-        pget \
-        pick \
-        pipe-rename \
-        pixz \
-        plzip \
-        pomsky \
-        prettierd \
-        prql-compiler \
-        procs \
-        procps-ng \
-        prr \
-        pspg \
-        pycp \
-        py-spy \
-        python=3.11.0 \
-        qsv \
-        ranger-fm \
-        rargs \
-        rclone \
-        remark-cli \
-        reposurgeon \
-        restic \
-        revive \
-        ripgrep \
-        ripgrep-all \
-        rm-improved \
-        rnr \
-        rospo \
-        rsc-2fa \
-        rsync \
-        ruff \
-        rush \
-        rust \
-        rust-analyzer \
-        rusync \
-        sad \
-        safe-rm \
-        sd \
-        sed \
-        selene \
-        serve-d \
-        sheldon \
-        shellcheck \
-        shellharden \
-        skim \
-        smem \
-        spectral-cli \
-        ssed \
-        starship \
-        staticcheck \
-        stgit \
-        stylua \
-        subversion \
-        sysstat \
-        sysroot_linux-64=2.17 \
-        tagref \
-        taplo \
-        tar \
-        tealdeer \
-        tectonic \
-        tere \
-        texinfo \
-        texlab \
-        textlint \
-        tig \
-        time \
-        tmux \
-        topgrade \
-        trash-cli \
-        tre-command \
-        tree \
-        tuc \
-        tv \
-        unar \
-        up \
-        uncrustify \
-        unzip \
-        util-linux \
-        vale \
-        valgrind \
-        vim-language-server \
-        viu \
-        vscode-json-languageserver \
-        watchexec \
-        wget \
-        which \
-        write-good \
-        xauth \
-        xclip \
-        xh \
-        xonsh \
-        xplr \
-        xq \
-        xz \
-        yadm \
-        yamlfmt \
-        yaml-language-server \
-        yj \
-        go-yq \
-        zellij \
-        zenith \
-        zet \
-        zip \
-        zoxide \
-        zsh
-
-    #To add
-    # citation-langserver \
-    # duc \
-    # felix \
-    # languagetool-code-comments \
-    # ltrs \
-    # skywalking-eyes \
-    # solargraph \
-    # uutils-coreutils \
-    # uutils-findutils \
-    
-    # Do these after so they override conflicting files
-    micromamba install --yes parallel rename
-    micromamba shell init --shell zsh
-    conda init bash
-    conda init zsh
-    . $HOME/micromamba/etc/profile.d/conda.sh
-    mamba init bash
-    mamba init zsh
-    conda config --set auto_stack 1
+comm -13 <(sort -u /tmp/installed_packages) <(sort -u $HOME/.local/share/chezmoi/dot_config/chezmoi/linux_packages) | xargs -P2 -I % pixi global install -c dnachun -c conda-forge -c bioconda %
 {{ end }}
-
 
 {{ if eq .chezmoi.os "darwin" -}}
-    if [ ! command -v brew &> /dev/null ]; then
-        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-    fi
-
-    source $HOME/.bashrc
-    brew bundle install --file=$HOME/.local/share/chezmoi/Brewfile
-    #micromamba shell init --shell zsh
-    #mamba init zsh
-    #conda config --set auto_stack 1
-    #conda config --set auto_activate_base false
+comm -13 <(sort -u /tmp/installed_packages) <(sort -u $HOME/.local/share/chezmoi/dot_config/chezmoi/macos_packages) | xargs -P2 -I % pixi global install -c dnachun -c conda-forge -c bioconda %
+brew bundle install --file=$HOME/.local/share/chezmoi/dot_config/chezmoi/Brewfile_casks
+export FULL_INSTALL=1
 {{ end }}
 
-# Install 
+if [ ! -z ${FULL_INSTALL} ]; then
+  comm -13 <(sort -u /tmp/installed_packages) <(sort -u $HOME/.local/share/chezmoi/dot_config/chezmoi/large_packages) | xargs -P2 -I % pixi global install -c dnachun -c conda-forge -c bioconda %
+  comm -13 <(sort -u /tmp/installed_packages) <(sort -u $HOME/.local/share/chezmoi/dot_config/chezmoi/huge_packages) | xargs -P2 -I % pixi global install -c dnachun -c conda-forge -c bioconda %
+fi
+
+{{ if eq .chezmoi.arch "amd64" -}}
+comm -13 <(sort -u /tmp/installed_packages) <(sort -u $HOME/.local/share/chezmoi/dot_config/chezmoi/intel_packages) | xargs -P2 -I % pixi global install -c dnachun -c conda-forge -c bioconda %
+{{ end }}
+
+micromamba shell init --shell=bash $HOME/micromamba
+micromamba shell init --shell zsh
+micromamba config prepend channels nodefaults
+micromamba config prepend channels bioconda
+micromamba config prepend channels conda-forge
+micromamba config prepend channels dnachun
+
+if [ -z $(micromamba env list | grep micromamba | cut -f 3 -d ' ' | grep '^r$') ]; then
+  micromamba create -n r
+fi
+
+micromamba install -n r r-languageserver r-colorout conda-tree
+
+{{ if eq .chezmoi.os "linux" -}}
+ln -sf ${HOME}/.pixi/bin/r ${HOME}/.pixi/bin/R
+ln -sf ${HOME}/.pixi/bin/rscript ${HOME}/.pixi/bin/Rscript
+{{ end }}
+
+cp ${HOME}/.local/share/chezmoi/dot_config/chezmoi/Rprofile ${HOME}/.pixi/envs/r-base/lib/R/etc/Rprofile.site
+
+# Install
 if [ ! -d $HOME/.local/share/zinit ]; then
-    export NO_INPUT=1
-    export NO_ANNEXES=1
-    bash -c "$(curl --fail --show-error --silent --location https://raw.githubusercontent.com/zdharma-continuum/zinit/HEAD/scripts/install.sh)"
-    zsh -c "source $HOME/.zshrc"
+  export NO_INPUT=1
+  export NO_ANNEXES=1
+  bash -c "$(curl --fail --show-error --silent --location https://raw.githubusercontent.com/zdharma-continuum/zinit/HEAD/scripts/install.sh)"
+  zsh -c "source $HOME/.zshrc"
 fi
 
 if [ ! -d $HOME/.config/base16-shell ]; then
-    git clone https://github.com/chriskempson/base16-shell.git $HOME/.config/base16-shell
+  git clone https://github.com/chriskempson/base16-shell.git $HOME/.config/base16-shell
 fi
 
 if [ ! -d $HOME/.tmux/plugins/tpm ]; then
-    git clone https://github.com/tmux-plugins/tpm $HOME/.tmux/plugins/tpm
+  git clone https://github.com/tmux-plugins/tpm $HOME/.tmux/plugins/tpm
+  $HOME/.tmux/plugins/tpm/bin/install_plugins
 fi
 
 if [ ! -d $HOME/.config/ranger/plugins/ranger_devicons ]; then
-    git clone https://github.com/alexanderjeurissen/ranger_devicons $HOME/.config/ranger/plugins/ranger_devicons
+  git clone https://github.com/alexanderjeurissen/ranger_devicons $HOME/.config/ranger/plugins/ranger_devicons
 fi
