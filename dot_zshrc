@@ -1,15 +1,65 @@
 #zmodload zsh/zprof # for debugging shell startup speed
 
-
 # Manually configured section
-# Aliases
-alias vim="nvim"
+# PATH
+export PATH="$(cope_path):$PATH"
+export PATH="$HOME/.scripts:$PATH"
+export PATH="$HOME/.cargo/bin:$PATH"
+export PATH="$HOME/.pixi/bin:$PATH"
+# Autosuggest
+bindkey '^f' forward-word
+bindkey '^b' backward-word
+bindkey '^e' end-of-line
+bindkey '^P' history-substring-search-up
+bindkey '^N' history-substring-search-down
+ZSH_AUTOSUGGEST_USE_ASYNC=true
 
+# Powerlevel10K
+(( ! ${+functions[p10k]} )) || p10k finalize
+
+# To customize prompt, run `p10k configure` or edit $HOME/.p10k.zsh.
+[[ ! -f $HOME/.p10k.zsh ]] || source $HOME/.p10k.zsh
 # Aliases to run some conda packages w/o activating environment
 if [[ -f "$HOME/.conda_aliases" ]]; then
     source $HOME/.conda_aliases
 fi
-
+# >>> mamba initialize >>>
+# !! Contents within this block are managed by 'mamba init' !!
+export MAMBA_EXE="/home/gryu/.local/bin/micromamba";
+export MAMBA_ROOT_PREFIX="/home/gryu/micromamba";
+__mamba_setup="$("$MAMBA_EXE" shell hook --shell zsh --prefix "$MAMBA_ROOT_PREFIX" 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__mamba_setup"
+else
+    if [ -f "/home/gryu/micromamba/etc/profile.d/micromamba.sh" ]; then
+        . "/home/gryu/micromamba/etc/profile.d/micromamba.sh"
+    else
+        export  PATH="/home/gryu/micromamba/bin:$PATH"  # extra space after export prevents interference from conda init
+    fi
+fi
+unset __mamba_setup
+# <<< mamba initialize <<<
+alias ma='micromamba activate '
+alias md='micromamba deactivate '
+alias mi='micromamba install '
+alias mc='micromamba create '
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$('/home/gryu/micromamba/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/home/gryu/micromamba/etc/profile.d/conda.sh" ]; then
+        . "/home/gryu/micromamba/etc/profile.d/conda.sh"
+    else
+        export PATH="/home/gryu/micromamba/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+if [ -f "/home/gryu/micromamba/etc/profile.d/mamba.sh" ]; then
+    . "/home/gryu/micromamba/etc/profile.d/mamba.sh"
+fi
+# <<< conda initialize <<<
 
 
 # Environment variables
@@ -23,34 +73,8 @@ export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
 
-
 # Load dircolors before plugins
 eval $(dircolors)
-
-# Powerlevel10K instant prompt doesn't work as desired
-#if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  #source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-#fi
-
-# Base 16 shell - not currently working
-#BASE16_SHELL="$HOME/.config/base16-shell/"
-#[ -n "$PS1" ] && \
-    #[ -s "$BASE16_SHELL/profile_helper.sh" ] && \
-        #eval "$("$BASE16_SHELL/profile_helper.sh")"
-
-# Broot
-#if [ -f $HOME/.config/broot/launcher/bash/br ]; then
-#    source $HOME/.config/broot/launcher/bash/br
-#fi
-
-
-# PM functions
-#source ~/.pm/pm.zsh
-#alias pma="pm add"
-#alias pmg="pm go"
-#alias pmrm="pm remove"
-#alias pml="pm list"
-# end PM
 
 # Automatic or semi-automatic configuration
 # The following lines were added by compinstall
@@ -179,19 +203,6 @@ zinit light-mode for \
 
 ### End of Zinit's installer chunk
 
-# Autosuggest
-bindkey '^f' forward-word
-bindkey '^b' backward-word
-bindkey '^e' end-of-line
-bindkey '^P' history-substring-search-up
-bindkey '^N' history-substring-search-down
-ZSH_AUTOSUGGEST_USE_ASYNC=true
-
-# Powerlevel10K
-(( ! ${+functions[p10k]} )) || p10k finalize
-
-# To customize prompt, run `p10k configure` or edit $HOME/.p10k.zsh.
-[[ ! -f $HOME/.p10k.zsh ]] || source $HOME/.p10k.zsh
 
 # Autoload compinit at the end
 autoload -Uz compinit && compinit
@@ -203,84 +214,34 @@ autoload -Uz compdef
 autoload -Uz promptinit && promptinit
 
 
-# Zoxide
-eval "$(zoxide init --cmd cd zsh)"
-#eval "$(pixi completion --shell zsh)"
-
-
-# >>> mamba initialize >>>
-# !! Contents within this block are managed by 'mamba init' !!
-export MAMBA_EXE="/home/gryu/.local/bin/micromamba";
-export MAMBA_ROOT_PREFIX="/home/gryu/micromamba";
-__mamba_setup="$("$MAMBA_EXE" shell hook --shell zsh --prefix "$MAMBA_ROOT_PREFIX" 2> /dev/null)"
-if [ $? -eq 0 ]; then
-    eval "$__mamba_setup"
-else
-    if [ -f "/home/gryu/micromamba/etc/profile.d/micromamba.sh" ]; then
-        . "/home/gryu/micromamba/etc/profile.d/micromamba.sh"
-    else
-        export  PATH="/home/gryu/micromamba/bin:$PATH"  # extra space after export prevents interference from conda init
-    fi
-fi
-unset __mamba_setup
-# <<< mamba initialize <<<
-alias ma='micromamba activate '
-alias md='micromamba deactivate '
-alias mi='micromamba install '
-alias mc='micromamba create '
-
-# >>> conda initialize >>>
-# !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('/home/gryu/micromamba/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
-if [ $? -eq 0 ]; then
-    eval "$__conda_setup"
-else
-    if [ -f "/home/gryu/micromamba/etc/profile.d/conda.sh" ]; then
-        . "/home/gryu/micromamba/etc/profile.d/conda.sh"
-    else
-        export PATH="/home/gryu/micromamba/bin:$PATH"
-    fi
-fi
-unset __conda_setup
-
-if [ -f "/home/gryu/micromamba/etc/profile.d/mamba.sh" ]; then
-    . "/home/gryu/micromamba/etc/profile.d/mamba.sh"
-fi
-# <<< conda initialize <<<
-
-
-export PATH="$(cope_path):$PATH"
-### End of Zinit's installer chunk
-
-## GPRyu 
-#export PATH="$HOME/bin/galyleo:$PATH"
+# Aliases
+alias vim="nvim"
 unalias l
 alias l='less -SNx16 '
 alias L='pspg --tsv --only-for-tables --no-progressive-load'
 alias dc='cd '
 alias bv='bcftools view --threads 32 '
-alias b='bcftools '
+alias b='bat '
 export H='/oak/stanford/groups/sjaiswal/gryu'
 export scg='/oak/stanford/scg/lab_sjaiswal/gryu'
 alias t='$HOME/.scripts/transpose.awk '
 alias tt="top -u${USER}"
 unalias lt
 
+
+### End of Zinit's installer chunk
+
+
 sarray_prefix="
 #!/bin/bash
 # . \"${HOME}/micromamba/etc/profile.d/conda.sh\"  # commented out by conda initialize
 . \"${HOME}/micromamba/etc/profile.d/mamba.sh\"
-mamba activate base 
+micromamba activate base 
 
 array_file=\$1
 array_prefix=\$(sed \"\${SLURM_ARRAY_TASK_ID}q; d\" \${array_file})
 "
 
-fpath=( $HOME/.scripts "${fpath[@]}" )
-autoload -Uz $fpath[1]/*(.:t)
 
 
 #zprof
-export PATH="$HOME/.scripts:$PATH"
-export PATH="$HOME/.cargo/bin:$PATH"
-export PATH="$HOME/.pixi/bin:$PATH"
