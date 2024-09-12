@@ -15,25 +15,25 @@ else
   touch /tmp/installed_packages
 fi
 
-comm -13 <(sort -u /tmp/installed_packages) <(sort -u $HOME/.local/share/chezmoi/dot_config/chezmoi/package_list) | xargs -P2 -I % pixi global install -c dnachun -c conda-forge -c bioconda %
+comm -13 <(sort -u /tmp/installed_packages) <(sort -u $HOME/.local/share/chezmoi/dot_packages/package_list) | xargs -P2 -I % pixi global install -c dnachun -c conda-forge -c bioconda %
 
 {{ if eq .chezmoi.os "linux" -}}
-comm -13 <(sort -u /tmp/installed_packages) <(sort -u $HOME/.local/share/chezmoi/dot_config/chezmoi/linux_packages) | xargs -P2 -I % pixi global install -c dnachun -c conda-forge -c bioconda %
+comm -13 <(sort -u /tmp/installed_packages) <(sort -u $HOME/.local/share/chezmoi/dot_packages/linux_packages) | xargs -P2 -I % pixi global install -c dnachun -c conda-forge -c bioconda %
 {{ end }}
 
 {{ if eq .chezmoi.os "darwin" -}}
-comm -13 <(sort -u /tmp/installed_packages) <(sort -u $HOME/.local/share/chezmoi/dot_config/chezmoi/macos_packages) | xargs -P2 -I % pixi global install -c dnachun -c conda-forge -c bioconda %
-brew bundle install --file=$HOME/.local/share/chezmoi/dot_config/chezmoi/Brewfile_casks
+comm -13 <(sort -u /tmp/installed_packages) <(sort -u $HOME/.local/share/chezmoi/dot_packages/macos_packages) | xargs -P2 -I % pixi global install -c dnachun -c conda-forge -c bioconda %
+brew bundle install --file=$HOME/.local/share/chezmoi/dot_packages/brewfile_casks
 export FULL_INSTALL=1
 {{ end }}
 
 if [ ! -z ${FULL_INSTALL} ]; then
-  comm -13 <(sort -u /tmp/installed_packages) <(sort -u $HOME/.local/share/chezmoi/dot_config/chezmoi/large_packages) | xargs -P2 -I % pixi global install -c dnachun -c conda-forge -c bioconda %
-  comm -13 <(sort -u /tmp/installed_packages) <(sort -u $HOME/.local/share/chezmoi/dot_config/chezmoi/huge_packages) | xargs -P2 -I % pixi global install -c dnachun -c conda-forge -c bioconda %
+  comm -13 <(sort -u /tmp/installed_packages) <(sort -u $HOME/.local/share/chezmoi/dot_packages/large_packages) | xargs -P2 -I % pixi global install -c dnachun -c conda-forge -c bioconda %
+  comm -13 <(sort -u /tmp/installed_packages) <(sort -u $HOME/.local/share/chezmoi/dot_packages/huge_packages) | xargs -P2 -I % pixi global install -c dnachun -c conda-forge -c bioconda %
 fi
 
 {{ if eq .chezmoi.arch "amd64" -}}
-comm -13 <(sort -u /tmp/installed_packages) <(sort -u $HOME/.local/share/chezmoi/dot_config/chezmoi/intel_packages) | xargs -P2 -I % pixi global install -c dnachun -c conda-forge -c bioconda %
+comm -13 <(sort -u /tmp/installed_packages) <(sort -u $HOME/.local/share/chezmoi/dot_packages/intel_packages) | xargs -P2 -I % pixi global install -c dnachun -c conda-forge -c bioconda %
 {{ end }}
 
 micromamba shell init --shell=bash $HOME/micromamba
