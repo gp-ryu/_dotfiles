@@ -1,0 +1,9 @@
+binutils
+gcc
+gcsfuse
+gxx
+patchelf
+procps-ng
+psmisc
+sysstat
+valgrind
