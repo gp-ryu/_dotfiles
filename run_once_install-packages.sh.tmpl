@@ -47,7 +47,7 @@ if [ -z $(micromamba env list | grep micromamba | cut -f 3 -d ' ' | grep '^r$') 
   micromamba create -n r
 fi
 
-micromamba install -n r r-languageserver r-colorout conda-tree
+micromamba install -n r r-languageserver r-colorout conda-tree "$(cat $HOME/.packages/r_packages)"
 
 {{ if eq .chezmoi.os "linux" -}}
 ln -sf ${HOME}/.pixi/bin/r ${HOME}/.pixi/bin/R
